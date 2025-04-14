@@ -1,10 +1,10 @@
-from pydantic import BaseModel, Fild
+from pydantic import BaseModel, Field
 from datetime import datetime
-from typing import  Optional
+from typing import Optional
 
 class TableBase(BaseModel):
     name: str
-    seats: str
+    seats: int
     location: str
 
 class TableCreate(TableBase):
@@ -18,7 +18,7 @@ class Table(TableBase):
 
 class ReservationBase(BaseModel):
     customer_name: str
-    table_idL: int
+    table_id: int
     reservation_time: datetime
     duration_minutes: int
 
@@ -29,4 +29,4 @@ class Reservation(ReservationBase):
     id: int
 
     class Config:
-         orm_mode: True
+        orm_mode = True 

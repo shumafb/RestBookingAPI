@@ -1,6 +1,18 @@
 services:
+  db:
+    image: postgres:15
+    container_name: db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=restaurant_db
+    ports:
+      - "5432:5432"
   web:
     build: .
+    container_name: web
     ports:
       - "8000:8000"
     volumes:
@@ -9,17 +21,15 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/restaurant_db
     depends_on:
       - db
-
-  db:
-    image: postgres:15
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=restaurant_db
-    ports:
-      - "5432:5432"
+    command: >
+      sh -c "
+      until alembic upgrade head; do
+        echo 'Ждём запуска базы данных...'
+        sleep 2
+      done &&
+      uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+      "
 
 volumes:
   postgres_data:
+    driver: local

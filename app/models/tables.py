@@ -1,15 +1,14 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
+from app.database import Base
 
-Base = declarative_base()
-
-class Tables(Base):
+class Table(Base):
     """
     id - идентификатор стола, первичный ключ, индексация
     name - название стола
     seats - количество мест
     location - местоположение
-    связь с таблицей Reservations, каскадное удаление
+    связь с таблицей Reservation, каскадное удаление
     """
     __tablename__ = 'tables'
 
@@ -17,9 +16,9 @@ class Tables(Base):
     name = Column(String(50))
     seats = Column(Integer)
     location = Column(String(50))
-    reservations = relationship("Reservations", back_populates="table", cascade="all, delete-orphan")
+    reservations = relationship("Reservation", back_populates="table", cascade="all, delete-orphan")
 
-class Reservations(Base):
+class Reservation(Base):
     """
     id - идентификатор брони, первичный ключ, индексация
     customer_name - имя клиента
@@ -36,4 +35,4 @@ class Reservations(Base):
     reservation_time = Column(DateTime)
     duration_minutes = Column(Integer)
 
-    table = relationship("Tables", back_populates="reservations")
+    table = relationship("Table", back_populates="reservations")
